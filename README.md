@@ -33,7 +33,7 @@ Give `MaskedInput` a [`mask`](#mask-string) and an `onChange` callback:
 var React = require('react')
 var MaskedInput = require('react-maskedinput')
 
-var CreditCardDetails = React.createClass({
+class CreditCardDetails extends React.Component {
   state: {
     card: '',
     expiry: '',
@@ -62,13 +62,13 @@ var CreditCardDetails = React.createClass({
       </label>
     </div>
   }
-})
+}
 ```
 
 Create some wrapper components if you have a masking configuration which will be reused:
 
 ```javascript
-var CustomInput = React.createClass({
+class CustomInput extends React.Component {
   render() {
     return <MaskedInput
       mask="1111-WW-11"
@@ -83,7 +83,7 @@ var CustomInput = React.createClass({
       }
     }/>
   }
-})
+}
 ```
 
 ## Props
