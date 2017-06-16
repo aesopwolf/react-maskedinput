@@ -1,7 +1,7 @@
 {
   "name": "react-maskedinput-autofill",
   "description": "Masked <input/> React component",
-  "version": "3.3.4",
+  "version": "3.3.5",
   "main": "./lib/index.js",
   "jsnext:main": "es6/index.js",
   "standalone": "MaskedInput",
@@ -29,7 +29,8 @@
     "test:watch": "nwb test --server"
   },
   "dependencies": {
-    "inputmask-core": "^2.1.1"
+    "inputmask-core": "^2.1.1",
+    "prop-types": "^15.5.10"
   },
   "peerDependencies": {
     "react": "0.14.x || 15.x.x"

@@ -1,3 +1,4 @@
+var PropTypes = require('prop-types')
 var React = require('react')
 var InputMask = require('inputmask-core')
 
@@ -59,10 +60,10 @@ function setSelection(el, selection) {
 
 var MaskedInput = React.createClass({
   propTypes: {
-    mask: React.PropTypes.string.isRequired,
+    mask: PropTypes.string.isRequired,
 
-    formatCharacters: React.PropTypes.object,
-    placeholderChar: React.PropTypes.string
+    formatCharacters: PropTypes.object,
+    placeholderChar: PropTypes.string
   },
 
   getDefaultProps() {
@@ -143,7 +144,7 @@ var MaskedInput = React.createClass({
         this.mask.selection.end = this.mask.selection.start + sizeDiff
         this.mask.backspace()
       }
-      this.mask.setValue(e.target.value);
+      this.mask.setValue(e.target.value)
       var value = this._getDisplayValue()
       e.target.value = value
       if (value) {
@@ -230,7 +231,7 @@ var MaskedInput = React.createClass({
       }
     }
     else {
-      this.mask.setValue(e.clipboardData.getData('Text'));
+      this.mask.setValue(e.clipboardData.getData('Text'))
       var value = this._getDisplayValue()
       e.target.value = value
       if (value) {
