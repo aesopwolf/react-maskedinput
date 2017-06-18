@@ -1,7 +1,7 @@
 {
   "name": "react-maskedinput-autofill",
   "description": "Masked <input/> React component",
-  "version": "3.3.6",
+  "version": "3.3.7",
   "main": "./lib/index.js",
   "jsnext:main": "es6/index.js",
   "standalone": "MaskedInput",

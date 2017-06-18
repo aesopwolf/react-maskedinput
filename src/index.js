@@ -59,6 +59,20 @@ function setSelection(el, selection) {
 }
 
 class MaskedInput extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.updatePattern = this.updatePattern.bind(this);
+    this.updateMaskSelection = this.updateMaskSelection.bind(this);
+    this.updateInputSelection = this.updateInputSelection.bind(this);
+    this.onChange = this.onChange.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
+    this.onKeyPress = this.onKeyPress.bind(this);
+    this.onPaste = this.onPaste.bind(this);
+    this.getDisplayValue = this.getDisplayValue.bind(this);
+    this.keyPressPropName = this.keyPressPropName.bind(this);
+    this.getEventHandlers = this.getEventHandlers.bind(this);
+  }
   componentWillMount() {
     var options = {
       pattern: this.props.mask,
@@ -94,32 +108,32 @@ class MaskedInput extends React.Component {
 
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.mask !== this.props.mask) {
-      this._updatePattern(nextProps)
+      this.updatePattern(nextProps)
     }
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.mask !== this.props.mask && this.mask.selection.start) {
-      this._updateInputSelection()
+      this.updateInputSelection()
     }
   }
 
-  _updatePattern(props) {
+  updatePattern(props) {
     this.mask.setPattern(props.mask, {
       value: this.mask.getRawValue(),
       selection: getSelection(this.input)
     })
   }
 
-  _updateMaskSelection() {
+  updateMaskSelection() {
     this.mask.selection = getSelection(this.input)
   }
 
-  _updateInputSelection() {
+  updateInputSelection() {
     setSelection(this.input, this.mask.selection)
   }
 
-  _onChange(e) {
+  onChange(e) {
     // console.log('onChange', JSON.stringify(getSelection(this.input)), e.target.value)
 
     var maskValue = this.mask.getValue()
@@ -127,15 +141,15 @@ class MaskedInput extends React.Component {
       // Cut or delete operations will have shortened the value
       if (e.target.value.length < maskValue.length) {
         var sizeDiff = maskValue.length - e.target.value.length
-        this._updateMaskSelection()
+        this.updateMaskSelection()
         this.mask.selection.end = this.mask.selection.start + sizeDiff
         this.mask.backspace()
       }
       this.mask.setValue(e.target.value)
-      var value = this._getDisplayValue()
+      var value = this.getDisplayValue()
       e.target.value = value
       if (value) {
-        this._updateInputSelection()
+        this.updateInputSelection()
       }
     }
     if (this.props.onChange) {
@@ -143,14 +157,14 @@ class MaskedInput extends React.Component {
     }
   }
 
-  _onKeyDown(e) {
+  onKeyDown(e) {
     // console.log('onKeyDown', JSON.stringify(getSelection(this.input)), e.key, e.target.value)
 
     if (isUndo(e)) {
       e.preventDefault()
       if (this.mask.undo()) {
-        e.target.value = this._getDisplayValue()
-        this._updateInputSelection()
+        e.target.value = this.getDisplayValue()
+        this.updateInputSelection()
         if (this.props.onChange) {
           this.props.onChange(e)
         }
@@ -160,8 +174,8 @@ class MaskedInput extends React.Component {
     else if (isRedo(e)) {
       e.preventDefault()
       if (this.mask.redo()) {
-        e.target.value = this._getDisplayValue()
-        this._updateInputSelection()
+        e.target.value = this.getDisplayValue()
+        this.updateInputSelection()
         if (this.props.onChange) {
           this.props.onChange(e)
         }
@@ -171,12 +185,12 @@ class MaskedInput extends React.Component {
 
     if (e.key === 'Backspace') {
       e.preventDefault()
-      this._updateMaskSelection()
+      this.updateMaskSelection()
       if (this.mask.backspace()) {
-        var value = this._getDisplayValue()
+        var value = this.getDisplayValue()
         e.target.value = value
         if (value) {
-          this._updateInputSelection()
+          this.updateInputSelection()
         }
         if (this.props.onChange) {
           this.props.onChange(e)
@@ -185,7 +199,7 @@ class MaskedInput extends React.Component {
     }
   }
 
-  _onKeyPress(e) {
+  onKeyPress(e) {
     // console.log('onKeyPress', JSON.stringify(getSelection(this.input)), e.key, e.target.value)
 
     // Ignore modified key presses
@@ -193,46 +207,46 @@ class MaskedInput extends React.Component {
     if (e.metaKey || e.altKey || e.ctrlKey || e.key === 'Enter') { return }
 
     e.preventDefault()
-    this._updateMaskSelection()
+    this.updateMaskSelection()
     if (this.mask.input((e.key || e.data))) {
       e.target.value = this.mask.getValue()
-      this._updateInputSelection()
+      this.updateInputSelection()
       if (this.props.onChange) {
         this.props.onChange(e)
       }
     }
   }
 
-  _onPaste(e) {
+  onPaste(e) {
     // console.log('onPaste', JSON.stringify(getSelection(this.input)), e.clipboardData.getData('Text'), e.target.value)
 
     e.preventDefault()
-    this._updateMaskSelection()
+    this.updateMaskSelection()
     // getData value needed for IE also works in FF & Chrome
     if (this.mask.paste(e.clipboardData.getData('Text'))) {
       e.target.value = this.mask.getValue()
       // Timeout needed for IE
-      setTimeout(this._updateInputSelection, 0)
+      setTimeout(this.updateInputSelection, 0)
       if (this.props.onChange) {
         this.props.onChange(e)
       }
     }
     else {
       this.mask.setValue(e.clipboardData.getData('Text'))
-      var value = this._getDisplayValue()
+      var value = this.getDisplayValue()
       e.target.value = value
       if (value) {
-        this._updateInputSelection()
+        this.updateInputSelection()
       }
     }
   }
 
-  _getDisplayValue() {
+  getDisplayValue() {
     var value = this.mask.getValue()
     return value === this.mask.emptyValue ? '' : value
   }
 
-  _keyPressPropName() {
+  keyPressPropName() {
     if (typeof navigator !== 'undefined') {
       return navigator.userAgent.match(/Android/i)
       ? 'onBeforeInput'
@@ -241,12 +255,12 @@ class MaskedInput extends React.Component {
     return 'onKeyPress'
   }
 
-  _getEventHandlers() {
+  getEventHandlers() {
     return {
-      onChange: this._onChange,
-      onKeyDown: this._onKeyDown,
-      onPaste: this._onPaste,
-      [this._keyPressPropName()]: this._onKeyPress
+      onChange: this.onChange,
+      onKeyDown: this.onKeyDown,
+      onPaste: this.onPaste,
+      [this.keyPressPropName()]: this.onKeyPress
     }
   }
 
@@ -261,8 +275,8 @@ class MaskedInput extends React.Component {
   render() {
     var ref = r => this.input = r
     var maxLength = this.mask.pattern.length
-    var value = this._getDisplayValue()
-    var eventHandlers = this._getEventHandlers()
+    var value = this.getDisplayValue()
+    var eventHandlers = this.getEventHandlers()
     var { size = maxLength, placeholder = this.mask.emptyValue } = this.props
 
     var {placeholderChar, formatCharacters, ...cleanedProps} = this.props
